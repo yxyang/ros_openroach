@@ -83,8 +83,14 @@ class Zumy:
               print "serial exception in update_cmd!"
               pass
 
+    def get_data(self):
+        self.rlock.acquire()
+        data = self.data
+        self.rlock.release()
+        return data
+
     def read_data(self):
-        print self.data
+        print self.get_data()
         print "-------------------"
 
     def reset(self):
@@ -119,11 +125,10 @@ class Zumy:
         return volt
 
     def read_enc(self):
-      #Get last two elements from data list and r_enc is the first element
-      self.rlock.acquire()
-      rval = self.data[-2:]
-      self.rlock.release()
-      if len(rval) == 2:
+      data = self.get_data()
+      if len(data) == 8:
+          # Get last two elements from data list and r_enc is the first element
+          rval = data[-2:]
           rval = [int(rval[1]), int(rval[0])]
       else:
           print "fail to read encoder data"
@@ -132,10 +137,9 @@ class Zumy:
 
     def read_imu(self):
       # Get data list but the last two elements, and convert to float
-      self.rlock.acquire() 
-      rval = self.data[:-2]
-      self.rlock.release() 
-      if len(rval) == 6:
+      data = self.get_data()
+      if len(data) == 8:
+          rval = self.data[:-2]
           rval = [float(i) for i in rval]
       else:
           print "fail to read imu data"
