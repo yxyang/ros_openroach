@@ -1,10 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Oct 29 06:39:30 2014
-
-@author: ajc
-"""
 
 from mbedrpc import *
 import threading, thread
@@ -52,13 +47,6 @@ class Zumy:
 
 	self.rlock=threading.Lock()
 
-        # cmd update thread
-        self.cmd_left = 0
-        self.cmd_right = 0 
-        #cmd_thread = threading.Thread(target=self.update_cmd)
-        #cmd_thread.start()
-        thread.start_new_thread(self.update_cmd, ())
-
         # Data update thread
         self.init_data()
         #data_thread = threading.Thread(target=self.update_data)
@@ -68,9 +56,13 @@ class Zumy:
     def init_data(self):
         while(not self.data):
            time.sleep(0.016) # try not to starve the main thread, update data at 60Hz
-           self.rlock.acquire()
-           self.data = self.sensor_data.run("").split(',')
-           self.rlock.release()
+           try:
+              self.rlock.acquire()
+              self.data = self.sensor_data.run("").split(',')
+              self.rlock.release()
+           except SerialException:
+              print "serial exception in data initialization!"
+              pass
 
     def update_data(self):
         while(1):
@@ -80,7 +72,7 @@ class Zumy:
               self.data = self.sensor_data.run("").split(',')
               self.rlock.release()
            except SerialException:
-              print "serial exception in update_cmd!"
+              print "serial exception in update_data!"
               pass
 
     def get_data(self):
@@ -98,22 +90,10 @@ class Zumy:
 
     def cmd(self, left, right):
         self.rlock.acquire()
-        self.cmd_left = left
-        self.cmd_right = right
+        self.m_left.cmd(left)
+        self.m_right.cmd(right)
         self.rlock.release()
-
-    def update_cmd(self):
-        while(1):
-           time.sleep(0.016) # test rate
-           self.rlock.acquire()
-           try:
-              self.m_left.cmd(self.cmd_left)
-              self.m_right.cmd(self.cmd_right)
-           except SerialException:
-              print "serial exception in update_cmd!"
-              pass
-           self.rlock.release()
-
+ 
     def read_voltage(self):
         self.rlock.acquire()
         try:
@@ -136,9 +116,9 @@ class Zumy:
       return rval
 
     def read_imu(self):
-      # Get data list but the last two elements, and convert to float
       data = self.get_data()
       if len(data) == 8:
+          # Get data list but the last two elements, and convert to float
           rval = self.data[:-2]
           rval = [float(i) for i in rval]
       else:
