@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
 Created on Wed Oct 29 06:39:30 2014
@@ -22,10 +23,10 @@ class Motor:
         else:
             self.a1.write(0)
             self.a2.write(-speed)
-
+'''
 imu_names = ['accel_x','accel_y','accel_z','gyro_x','gyro_y','gyro_z']
 enc_names = ['r_enc','l_enc']
-
+'''
 class Zumy:
     def __init__(self, dev='/dev/ttyACM0'):
         self.mbed=SerialRPC(dev, 115200)
@@ -44,9 +45,16 @@ class Zumy:
         self.m_right = Motor(a1, a2)
         self.m_left = Motor(b1, b2)
         self.an = AnalogIn(self.mbed, p20)
-        self.imu_vars = [RPCVariable(self.mbed,name) for name in imu_names]
-        self.enc_vars = [RPCVariable(self.mbed,name) for name in enc_names]
-        self.rlock=threading.Lock()
+        #self.imu_vars = [RPCVariable(self.mbed,name) for name in imu_names]
+        #self.enc_vars = [RPCVariable(self.mbed,name) for name in enc_names]
+	self.sensor_data = RPCFunction(self.mbed, "gsd")
+	self.rst = RPCFunction(self.mbed, "rst")
+        
+
+	self.rlock=threading.Lock()
+
+    def reset(self):
+        self.rst.run("test")
 
     def cmd(self, left, right):
         self.rlock.acquire()
@@ -71,7 +79,8 @@ class Zumy:
     def read_enc(self):
       self.rlock.acquire()
       try:
-        rval = [int(var.read()) for var in self.enc_vars]
+        #rval = [int(var.read()) for var in self.enc_vars]
+        rval = [0, 0]
       except SerialException:
         pass
       self.rlock.release()
@@ -80,7 +89,12 @@ class Zumy:
     def read_imu(self):
       self.rlock.acquire()
       try:
-        rval = [float(var.read()) for var in self.imu_vars]
+        #rval = [float(var.read()) for var in self.imu_vars]
+       
+        # temporary sensor data display
+        print self.sensor_data.run("test")
+        print "----------------"
+        rval = [0, 0, 0, 0, 0, 0]
       except SerialException:
         pass
       self.rlock.release()
@@ -90,4 +104,7 @@ if __name__ == '__main__':
     z=Zumy()
     z.cmd(0.3,0.3)
     time.sleep(0.3)
-    z.cmd(0,0) 
+    z.cmd(0,0)
+
+    z.reset() 
+
