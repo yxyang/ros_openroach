@@ -5,7 +5,7 @@ import rospy
 from geometry_msgs.msg import Twist
 from threading import Condition
 from zumy import Zumy
-from std_msgs import String
+from std_msgs.msg import String
 
 import socket
 
@@ -35,7 +35,7 @@ class ZumyROS:
     while not rospy.is_shutdown():
       self.lock.acquire()
       self.zumy.cmd(*self.cmd)
-      self.hearBeat.publish("I am alive")
+      self.heartBeat.publish("I am alive")
       self.lock.release()
       self.rate.sleep()
     self.zumy.cmd(0,0)
