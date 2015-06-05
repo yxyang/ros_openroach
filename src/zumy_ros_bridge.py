@@ -5,6 +5,9 @@ import rospy
 from geometry_msgs.msg import Twist
 from threading import Condition
 from zumy import Zumy
+from std_msgs import String
+
+import socket
 
 class ZumyROS:	
   def __init__(self):
@@ -14,6 +17,8 @@ class ZumyROS:
     self.lock = Condition()
     self.rate = rospy.Rate(30.0)
     self.zumy = Zumy()
+    self.name = socket.gethostname()
+    self.heartBeat = rospy.Publisher('/' + self.name + '/heartBeat', String, queue_size=5)
 
   def cmd_callback(self, msg):
     lv = 0.6
@@ -30,6 +35,7 @@ class ZumyROS:
     while not rospy.is_shutdown():
       self.lock.acquire()
       self.zumy.cmd(*self.cmd)
+      self.hearBeat.publish("I am alive")
       self.lock.release()
       self.rate.sleep()
     self.zumy.cmd(0,0)
