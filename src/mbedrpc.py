@@ -78,14 +78,21 @@ class mbed:
 
 class SerialRPC(mbed):
 
-    def __init__(self,port, baud):
-        self.ser = serial.Serial(port)
-        self.ser.setBaudrate(baud)
-
+    def __init__(self,port, baud, timeout=0.1):
+        self.ser = None
+        while self.ser == None:
+          try:
+            self.ser = serial.Serial(port, timeout=timeout)
+            self.ser.setBaudrate(baud)
+          except:
+            time.sleep(0.1)
 
     def rpc(self, name, method, args):
         self.ser.write("/" + name + "/" + method + " " + " ".join(args) + "\n")
-        return self.ser.readline().strip()
+        # Wait necessary to prevent incomplete reads, tends to take ~0.0002s to read
+        time.sleep(0.01)
+        rval = self.ser.readline().strip()
+        return rval
 
 class HTTPRPC(mbed):
 
