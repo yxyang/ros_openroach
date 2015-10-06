@@ -14,6 +14,7 @@ class Motor:
     def __init__(self, a1, a2):
         self.a1=a1
         self.a2=a2
+
     def cmd(self, speed):
         if speed >=0:
             self.a1.write(speed)
@@ -39,8 +40,9 @@ class Zumy:
 
     def cmd(self, left, right):
         self.rlock.acquire()
+	# As of Rev. F, positive command is sent to both left and right
         try:
-          self.m_left.cmd(-left)
+          self.m_left.cmd(left)
           self.m_right.cmd(right)
         except SerialException:
           pass
