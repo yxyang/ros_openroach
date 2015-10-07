@@ -55,8 +55,10 @@ class Zumy:
 #        self.last_left=left
 #        self.last_right=right
 #        if self.enabled:
+        
+        # As of Rev. F, positive command is sent to both left and right
         self.rlock.acquire()
-        self.m_left.cmd(-left)
+        self.m_left.cmd(left)
         self.m_right.cmd(right)
         self.rlock.release()
 #        else:
