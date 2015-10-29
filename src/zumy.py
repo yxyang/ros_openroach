@@ -28,6 +28,14 @@ class Zumy:
         a2=PwmOut(self.mbed, p22)
         b1=PwmOut(self.mbed, p23)
         b2=PwmOut(self.mbed, p24)
+
+        #Setting motor PWM frequency
+        pwm_freq = 50.0
+        a1.period(1/pwm_freq)
+        a2.period(1/pwm_freq)
+        b1.period(1/pwm_freq)
+        b2.period(1/pwm_freq)
+        
         self.m_right = Motor(a1, a2)
         self.m_left = Motor(b1, b2)
         self.an = AnalogIn(self.mbed, p20)
