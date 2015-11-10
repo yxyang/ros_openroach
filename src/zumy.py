@@ -24,6 +24,7 @@ class Motor:
             self.a2.write(-speed)
 
 imu_names = ['accel_x','accel_y','accel_z','gyro_x','gyro_y','gyro_z']
+enc_names = ['r_enc','l_enc']
 
 class Zumy:
     def __init__(self, dev='/dev/ttyACM0'):
@@ -36,6 +37,7 @@ class Zumy:
         self.m_left = Motor(b1, b2)
         self.an = AnalogIn(self.mbed, p20)
         self.imu_vars = [RPCVariable(self.mbed,name) for name in imu_names]
+        self.enc_vars = [RPCVariable(self.mbed,name) for name in enc_names]
         self.rlock=threading.Lock()
 
     def cmd(self, left, right):
@@ -57,6 +59,15 @@ class Zumy:
         self.rlock.release()
         volt=ain*(4.99+15.8) / 4.99
         return volt
+
+    def read_imu(self):
+      self.rlock.acquire()
+      try:
+        rval = [float(var.read()) for var in self.enc_vars]
+      except SerialException:
+        pass
+      self.rlock.release()
+      return rval
 
     def read_imu(self):
       self.rlock.acquire()
