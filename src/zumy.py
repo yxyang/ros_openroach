@@ -60,10 +60,10 @@ class Zumy:
         volt=ain*(4.99+15.8) / 4.99
         return volt
 
-    def read_imu(self):
+    def read_enc(self):
       self.rlock.acquire()
       try:
-        rval = [float(var.read()) for var in self.enc_vars]
+        rval = [int(var.read()) for var in self.enc_vars]
       except SerialException:
         pass
       self.rlock.release()
