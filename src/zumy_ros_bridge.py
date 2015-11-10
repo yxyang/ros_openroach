@@ -6,7 +6,7 @@ from geometry_msgs.msg import Twist
 from threading import Condition
 from zumy import Zumy
 from std_msgs.msg import String,Header
-from sensor_msgs.msg import Imu
+from std_msgs.msg import Int16
 
 import socket,time
 
@@ -21,6 +21,8 @@ class ZumyROS:
     self.name = socket.gethostname()
     self.heartBeat = rospy.Publisher('/' + self.name + '/heartBeat', String, queue_size=5)
     self.imu_pub = rospy.Publisher('/' + self.name + '/imu', Imu, queue_size = 1)
+    self.r_enc_pub = rospy.Publisher('/' + self.name + '/r_enc', Int16, queue_size = 5)
+    self.l_enc_pub = rospy.Publisher('/' + self.name + '/l_enc', Int16, queue_size = 5)
     self.imu_count = 0
 
   def cmd_callback(self, msg):
@@ -39,6 +41,7 @@ class ZumyROS:
       self.lock.acquire()
       self.zumy.cmd(*self.cmd)
       imu_data = self.zumy.read_imu()
+      enc_data = self.zumy.read_enc()
       self.lock.release()
       
       imu_msg = Imu()
@@ -50,6 +53,12 @@ class ZumyROS:
       imu_msg.angular_velocity.y = 3.14 / 180.0 * imu_data[4]
       imu_msg.angular_velocity.z = 3.14 / 180.0 * imu_data[5]
       self.imu_pub.publish(imu_msg)
+      
+      enc_msg = Int16()
+      enc_msg.data = enc_data[0]
+      self.r_enc_pub.publish(enc_msg)
+      enc_msg.data = enc_data[1]
+      self.l_enc_pub.publish(enc_msg)
 
       self.heartBeat.publish("I am alive")
       self.rate.sleep()
