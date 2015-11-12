@@ -6,6 +6,7 @@ from geometry_msgs.msg import Twist
 from threading import Condition
 from zumy import Zumy
 from std_msgs.msg import String
+from sensor_msgs.msg import Imu
 
 import socket
 
