@@ -19,10 +19,10 @@ class ZumyROS:
     self.lock = Condition()
     self.rate = rospy.Rate(30.0)
     self.name = socket.gethostname()
-    self.heartBeat = rospy.Publisher('/' + self.name + '/heartBeat', String, queue_size=5)
-    self.imu_pub = rospy.Publisher('/' + self.name + '/imu', Imu, queue_size = 1)
-    self.r_enc_pub = rospy.Publisher('/' + self.name + '/r_enc', Int16, queue_size = 5)
-    self.l_enc_pub = rospy.Publisher('/' + self.name + '/l_enc', Int16, queue_size = 5)
+    self.heartBeat = rospy.Publisher('heartBeat', String, queue_size=5)
+    self.imu_pub = rospy.Publisher('imu', Imu, queue_size = 1)
+    self.r_enc_pub = rospy.Publisher('r_enc', Int16, queue_size = 5)
+    self.l_enc_pub = rospy.Publisher('l_enc', Int16, queue_size = 5)
     self.imu_count = 0
 
   def cmd_callback(self, msg):
