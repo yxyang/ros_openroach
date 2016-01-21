@@ -33,6 +33,14 @@ class Zumy:
         a2=PwmOut(self.mbed, p22)
         b1=PwmOut(self.mbed, p23)
         b2=PwmOut(self.mbed, p24)
+
+        #Setting motor PWM frequency
+        pwm_freq = 50.0
+        a1.period(1/pwm_freq)
+        a2.period(1/pwm_freq)
+        b1.period(1/pwm_freq)
+        b2.period(1/pwm_freq)
+        
         self.m_right = Motor(a1, a2)
         self.m_left = Motor(b1, b2)
         self.an = AnalogIn(self.mbed, p20)
@@ -42,7 +50,7 @@ class Zumy:
 
     def cmd(self, left, right):
         self.rlock.acquire()
-	# As of Rev. F, positive command is sent to both left and right
+	      # As of Rev. F, positive command is sent to both left and right
         try:
           self.m_left.cmd(left)
           self.m_right.cmd(right)

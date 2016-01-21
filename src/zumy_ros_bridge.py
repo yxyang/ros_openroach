@@ -5,8 +5,8 @@ import rospy
 from geometry_msgs.msg import Twist
 from threading import Condition
 from zumy import Zumy
-from std_msgs.msg import String,Header
-from std_msgs.msg import Int16
+from std_msgs.msg import String,Header,Int16
+from sensor_msgs.msg import Imu
 
 import socket,time
 
