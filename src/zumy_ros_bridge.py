@@ -15,7 +15,7 @@ class ZumyROS:
     self.zumy = Zumy()
     rospy.init_node('zumy_ros')
     self.cmd = (0,0)
-    rospy.Subscriber('cmd_vel', Twist, self.cmd_callback)
+    rospy.Subscriber('cmd_vel', Twist, self.cmd_callback,queue_size=1)
     self.lock = Condition()
     self.rate = rospy.Rate(30.0)
     self.name = socket.gethostname()
