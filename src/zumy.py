@@ -81,7 +81,10 @@ class Zumy:
       self.rlock.acquire()
       try:
         #rval = [int(var.read()) for var in self.enc_vars]
-        rval = [0, 0]
+
+        # Get last two element from the list and r_enc is the first element
+        rval = self.sensor_data.run("test").split(',')[-2:]
+        rval = [int(rval[1]), int(rval[0])]
       except SerialException:
         pass
       self.rlock.release()
@@ -90,12 +93,16 @@ class Zumy:
     def read_imu(self):
       self.rlock.acquire()
       try:
-        #rval = [float(var.read()) for var in self.imu_vars]
-       
         # temporary sensor data display
         print self.sensor_data.run("test")
         print "----------------"
-        rval = [0, 0, 0, 0, 0, 0]
+
+        #rval = [float(var.read()) for var in self.imu_vars] 
+
+        # Get everything but the last two element from the list, and convert to float 
+        rval = self.sensor_data.run("test").split(',')[:-2] 
+        rval = [float(i) for i in rval]
+
       except SerialException:
         pass
       self.rlock.release()
