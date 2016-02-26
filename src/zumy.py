@@ -50,7 +50,8 @@ class Zumy:
         #self.enc_vars = [RPCVariable(self.mbed,name) for name in enc_names]
 	self.sensor_data = RPCFunction(self.mbed, "gsd")
 	self.rst = RPCFunction(self.mbed, "rst")
-        
+	self.wd_init = RPCFunction(self.mbed, "wdinit")
+        self.wd_init.run("test")
 
 	self.rlock=threading.Lock()
 
