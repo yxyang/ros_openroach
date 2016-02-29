@@ -5,7 +5,7 @@ import rospy
 from geometry_msgs.msg import Twist
 from threading import Condition
 from zumy import Zumy
-from std_msgs.msg import String,Header,Int32
+from std_msgs.msg import String,Header,Int32,Float32
 from sensor_msgs.msg import Imu
 
 import socket,time
@@ -19,10 +19,11 @@ class ZumyROS:
     self.lock = Condition()
     self.rate = rospy.Rate(30.0)
     self.name = socket.gethostname()
-    self.heartBeat = rospy.Publisher('heartBeat', String, queue_size=5)
+    self.heartBeat = rospy.Publisher('heartBeat', String, queue_size=1)
     self.imu_pub = rospy.Publisher('imu', Imu, queue_size = 5)
-    self.r_enc_pub = rospy.Publisher('r_enc', Int32, queue_size = 5)
-    self.l_enc_pub = rospy.Publisher('l_enc', Int32, queue_size = 5)
+    self.r_enc_pub = rospy.Publisher('r_enc', Int32, queue_size = 1)
+    self.l_enc_pub = rospy.Publisher('l_enc', Int32, queue_size = 1)
+    self.volt_pub = rospy.Publisher('voltage',Float32, queue_size=1)
     self.imu_count = 0
 
   def cmd_callback(self, msg):
@@ -42,6 +43,7 @@ class ZumyROS:
       self.zumy.cmd(*self.cmd)
       imu_data = self.zumy.read_imu()
       enc_data = self.zumy.read_enc()
+      volt_data = self.zumy.read_voltage()
       self.lock.release()
       
       imu_msg = Imu()
@@ -60,6 +62,10 @@ class ZumyROS:
       enc_msg = Int32()
       enc_msg.data = enc_data[1]
       self.l_enc_pub.publish(enc_msg)
+
+      volt_msg = Float32()
+      volt_msg.data = volt_data
+      self.volt_pub.publish(volt_msg)
 
       #self.heartBeat.publish("I am alive")
       self.rate.sleep()
