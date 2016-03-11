@@ -7,7 +7,7 @@ Created on Wed Oct 29 06:39:30 2014
 """
 
 from mbedrpc import *
-import threading
+import threading, thread
 import time
 from serial import SerialException
 
@@ -23,10 +23,6 @@ class Motor:
         else:
             self.a1.write(0)
             self.a2.write(-speed)
-'''
-imu_names = ['accel_x','accel_y','accel_z','gyro_x','gyro_y','gyro_z']
-enc_names = ['r_enc','l_enc']
-'''
 
 class Zumy:
     def __init__(self, dev='/dev/ttyACM0'):
@@ -46,21 +42,43 @@ class Zumy:
         self.m_right = Motor(a1, a2)
         self.m_left = Motor(b1, b2)
         self.an = AnalogIn(self.mbed, p20)
-        #self.imu_vars = [RPCVariable(self.mbed,name) for name in imu_names]
-        #self.enc_vars = [RPCVariable(self.mbed,name) for name in enc_names]
+
+        self.data = []
+
 	self.sensor_data = RPCFunction(self.mbed, "gsd")
 	self.rst = RPCFunction(self.mbed, "rst")
 	self.wd_init = RPCFunction(self.mbed, "wdinit")
-        self.wd_init.run("test")
+        self.wd_init.run("")
 
 	self.rlock=threading.Lock()
 
+        self.init_data()
+        thread.start_new_thread(self.update_data, ())
+
+    def init_data(self):
+        while(not self.data):
+           time.sleep(0.016) # try not to starve the main thread, update data at 60Hz
+           self.rlock.acquire()
+           self.data = self.sensor_data.run("").split(',')
+           self.rlock.release()
+
+    def update_data(self):
+        while(1):
+           time.sleep(0.016) # try not to starve the main thread, update data at 60Hz
+           self.rlock.acquire()
+           self.data = self.sensor_data.run("").split(',')
+           self.rlock.release()
+
+    def read_data(self):
+        print self.data
+        print "-------------------"
+
     def reset(self):
-        self.rst.run("test")
+        self.rst.run("")
 
     def cmd(self, left, right):
         self.rlock.acquire()
-	      # As of Rev. F, positive command is sent to both left and right
+	# As of Rev. F, positive command is sent to both left and right
         try:
           self.m_left.cmd(left)
           self.m_right.cmd(right)
@@ -81,10 +99,8 @@ class Zumy:
     def read_enc(self):
       self.rlock.acquire()
       try:
-        #rval = [int(var.read()) for var in self.enc_vars]
-
-        # Get last two element from the list and r_enc is the first element
-        rval = self.sensor_data.run("test").split(',')[-2:]
+        # Get last two elements from data list and r_enc is the first element
+        rval = self.data[-2:]
         rval = [int(rval[1]), int(rval[0])]
       except SerialException:
         pass
@@ -93,15 +109,9 @@ class Zumy:
 
     def read_imu(self):
       self.rlock.acquire()
-      try:
-        # temporary sensor data display
-        print self.sensor_data.run("test")
-        print "----------------"
-
-        #rval = [float(var.read()) for var in self.imu_vars] 
-
-        # Get everything but the last two element from the list, and convert to float 
-        rval = self.sensor_data.run("test").split(',')[:-2] 
+      try:        
+        # Get data list but the last two elements, and convert to float 
+        rval = self.data[:-2] 
         rval = [float(i) for i in rval]
 
       except SerialException:

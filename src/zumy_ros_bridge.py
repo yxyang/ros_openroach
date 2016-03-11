@@ -17,7 +17,7 @@ class ZumyROS:
     self.cmd = (0,0)
     rospy.Subscriber('cmd_vel', Twist, self.cmd_callback,queue_size=1)
     self.lock = Condition()
-    self.rate = rospy.Rate(30.0)
+    self.rate = rospy.Rate(100.0)
     self.name = socket.gethostname()
     self.heartBeat = rospy.Publisher('heartBeat', String, queue_size=5)
     self.imu_pub = rospy.Publisher('imu', Imu, queue_size = 1)
@@ -40,6 +40,8 @@ class ZumyROS:
     while not rospy.is_shutdown():
       self.lock.acquire()
       self.zumy.cmd(*self.cmd)
+      # print imu and enc data
+      self.zumy.read_data()
       imu_data = self.zumy.read_imu()
       enc_data = self.zumy.read_enc()
       self.lock.release()
