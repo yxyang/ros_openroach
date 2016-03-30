@@ -131,6 +131,5 @@ if __name__ == '__main__':
     z.cmd(0.3,0.3)
     time.sleep(0.3)
     z.cmd(0,0)
-
     z.reset() 
 
