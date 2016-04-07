@@ -40,7 +40,8 @@ class Zumy:
 
         self.data = []
 
-	self.sensor_data = RPCFunction(self.mbed, "gsd")
+	self.imu_data = RPCFunction(self.mbed, "gid")
+	self.enc_data = RPCFunction(self.mbed, "ged")
 	self.rst = RPCFunction(self.mbed, "rst")
 	#self.wd_init = RPCFunction(self.mbed, "wdinit")
         #self.wd_init.run("")
@@ -55,21 +56,23 @@ class Zumy:
 
     def init_data(self):
         while(not self.data):
-           time.sleep(0.016) # try not to starve the main thread, update data at 60Hz
+           time.sleep(0.01) # update data at 100Hz to not starve the main thread
            try:
               self.rlock.acquire()
-              self.data = self.sensor_data.run("").split(',')
+              self.data = self.enc_data.run("").split(',') + self.imu_data.run("").split(',') 
               self.rlock.release()
            except SerialException:
-              print "serial exception in data initialization!"
+              print "serial exception in update_data!"
               pass
+
+
 
     def update_data(self):
         while(1):
-           time.sleep(0.016) # try not to starve the main thread, update data at 60Hz
+           time.sleep(0.01) # update data at 100Hz to not starve the main thread
            try:
               self.rlock.acquire()
-              self.data = self.sensor_data.run("").split(',')
+              self.data = self.enc_data.run("").split(',') + self.imu_data.run("").split(',') 
               self.rlock.release()
            except SerialException:
               print "serial exception in update_data!"
@@ -108,7 +111,7 @@ class Zumy:
       data = self.get_data()
       if len(data) == 8:
           # Get last two elements from data list and r_enc is the first element
-          rval = data[-2:]
+          rval = data[:2]
           rval = [int(rval[1]), int(rval[0])]
       else:
           print "fail to read encoder data"
@@ -119,7 +122,7 @@ class Zumy:
       data = self.get_data()
       if len(data) == 8:
           # Get data list but the last two elements, and convert to float
-          rval = self.data[:-2]
+          rval = self.data[2:]
           rval = [float(i) for i in rval]
       else:
           print "fail to read imu data"
