@@ -28,7 +28,7 @@ class ZumyROS:
 
   def cmd_callback(self, msg):
     lv = 0.6
-    la = 0.4
+    la = -0.4
     v = msg.linear.x
     a = msg.angular.z
     r = lv*v + la*a
@@ -41,33 +41,34 @@ class ZumyROS:
     while not rospy.is_shutdown():
       self.lock.acquire()
       self.zumy.cmd(*self.cmd)
-      imu_data = self.zumy.read_imu()
-      enc_data = self.zumy.read_enc()
-      volt_data = self.zumy.read_voltage()
+      #imu_data = self.zumy.read_imu()
+      #enc_data = self.zumy.read_enc()
+      #volt_data = self.zumy.read_voltage()
       self.lock.release()
-      
-      imu_msg = Imu()
-      imu_msg.header = Header(self.imu_count,rospy.Time.now(),self.name)
-      imu_msg.linear_acceleration.x = 9.81 * imu_data[0]
-      imu_msg.linear_acceleration.y = 9.81 * imu_data[1]
-      imu_msg.linear_acceleration.z = 9.81 * imu_data[2]
-      imu_msg.angular_velocity.x = 3.14 / 180.0 * imu_data[3]
-      imu_msg.angular_velocity.y = 3.14 / 180.0 * imu_data[4]
-      imu_msg.angular_velocity.z = 3.14 / 180.0 * imu_data[5]
-      self.imu_pub.publish(imu_msg)
-      
-      enc_msg = Int32()
-      enc_msg.data = enc_data[0]
-      self.r_enc_pub.publish(enc_msg)
-      enc_msg = Int32()
-      enc_msg.data = enc_data[1]
-      self.l_enc_pub.publish(enc_msg)
+      '''
+#      imu_msg = Imu()
+#      imu_msg.header = Header(self.imu_count,rospy.Time.now(),self.name)
+#      imu_msg.linear_acceleration.x = 9.81 * imu_data[0]
+#      imu_msg.linear_acceleration.y = 9.81 * imu_data[1]
+#      imu_msg.linear_acceleration.z = 9.81 * imu_data[2]
+#      imu_msg.angular_velocity.x = 3.14 / 180.0 * imu_data[3]
+#      imu_msg.angular_velocity.y = 3.14 / 180.0 * imu_data[4]
+#      imu_msg.angular_velocity.z = 3.14 / 180.0 * imu_data[5]
+#      self.imu_pub.publish(imu_msg)
+#      
+#      enc_msg = Int32()
+#      enc_msg.data = enc_data[0]
+#      self.r_enc_pub.publish(enc_msg)
+#      enc_msg = Int32()
+#      enc_msg.data = enc_data[1]
+#      self.l_enc_pub.publish(enc_msg)
+      '''
 
-      volt_msg = Float32()
-      volt_msg.data = volt_data
-      self.volt_pub.publish(volt_msg)
+      #volt_msg = Float32()
+      #volt_msg.data = volt_data
+      #self.volt_pub.publish(volt_msg)
 
-      #self.heartBeat.publish("I am alive")
+      self.heartBeat.publish("I am alive")
       self.rate.sleep()
 
     # If shutdown, turn off motors
