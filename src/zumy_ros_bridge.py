@@ -14,7 +14,7 @@ class ZumyROS:
     self.zumy = Zumy()
     
     rospy.init_node('zumy_ros')
-    self.rate = rospy.Rate(200.0)
+    self.rate = rospy.Rate(100.0)
 
     rospy.Subscriber('cmd_vel', Twist, self.cmd_callback, queue_size=1)
     
