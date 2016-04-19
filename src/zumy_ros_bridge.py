@@ -34,6 +34,7 @@ class ZumyROS:
     self.last_enc_time = None
     self.last_r_enc = None
     self.last_l_enc = None
+    self.first_sensor_time = None
 
   def cmd_callback(self, msg):
     lv = 40.0
@@ -47,13 +48,19 @@ class ZumyROS:
   def run(self):
     while not rospy.is_shutdown():
       sensor_packet = self.zumy.read_sensors()
+        
 
       if sensor_packet is not None:
         if sensor_packet['type'] is 'S':
-          current_time = rospy.Time.now()
+          
+          if self.first_sensor_time is None:
+            self.first_sensor_time = (sensor_packet['time'],rospy.Time.now())
+
+          time_delta =  rospy.Duration((sensor_packet['time']-self.first_sensor_time[0]) / 1000000.0)
+          sensor_time = self.first_sensor_time[1] + time_delta
 
           imu_msg = Imu()
-          imu_msg.header = Header(self.imu_count, current_time, self.name)
+          imu_msg.header = Header(self.imu_count, sensor_time, self.name)
           self.imu_count += 1
           imu_msg.linear_acceleration.x = 9.81 * sensor_packet['ax']
           imu_msg.linear_acceleration.y = 9.81 * sensor_packet['ay']
