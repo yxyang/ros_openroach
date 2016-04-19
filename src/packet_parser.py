@@ -9,8 +9,8 @@ import time
 
 crc8 = crcmod.mkCrcFun(0x1D5,initCrc=0,rev=False)
 
-header_format = 'BBcI'
-header_fields = ['start','length','type','sequence']
+header_format = 'BBcBI'
+header_fields = ['start','length','type','flags','sequence']
 
 data_formats = {
   'C': {
@@ -98,19 +98,22 @@ def get_time_packet(set_time = None):
     set_time = time.time()
   return {
     'type': 'T',
+    'flags': 0,
     'time': set_time,
-    'sequence': 0
+    'sequence': 0,
   }
   
 def get_reset_packet():
   return {
     'type': 'R',
+    'flags': 0,
     'sequence': 0
   }
 
 def get_read_packet(period = 0):
   return {
     'type': 'G',
+    'flags': 0,
     'period': period,
     'sequence': 0
   }
@@ -118,6 +121,7 @@ def get_read_packet(period = 0):
 def get_command_packet(left=0.0,right=0.0):
   return {
     'type': 'C',
+    'flags': 0,
     'left': left,
     'right': right,
     'sequence': 0
