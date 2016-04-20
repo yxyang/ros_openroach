@@ -9,6 +9,9 @@ from sensor_msgs.msg import Imu
 
 import socket
 
+ROBOT_RADIUS = 0.02
+ROBOT_BASE = 0.1
+
 class ZumyROS:
   def __init__(self):
     self.zumy = Zumy()
@@ -37,12 +40,10 @@ class ZumyROS:
     self.first_sensor_time = None
 
   def cmd_callback(self, msg):
-    lv = 40.0
-    la = 40.0
     v = msg.linear.x
     a = msg.angular.z
-    r = lv*v + la*a
-    l = lv*v - la*a
+    l = (v - a*ROBOT_BASE/2) / ROBOT_RADIUS
+    r = (v + a*ROBOT_BASE/2) / ROBOT_RADIUS
     self.zumy.cmd(l,r)
 
   def run(self):
