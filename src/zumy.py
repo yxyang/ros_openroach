@@ -26,7 +26,7 @@ class Zumy():
     return self.parser.get(True,0.01)
 
   def read_voltage(self):
-    return self.read_sensors()['voltage']
+    return self.read_sensors()['voltage'] * 3.3 * 3.0
 
   def read_enc(self):
     sensors = self.read_sensors()
