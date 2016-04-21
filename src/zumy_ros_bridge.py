@@ -90,7 +90,7 @@ class ZumyROS:
           self.l_vel_pub.publish(vel_msg)
 
           volt_msg = Float32()
-          volt_msg.data = sensor_packet['voltage']
+          volt_msg.data = sensor_packet['voltage'] * 3.3 * 3.0
           self.volt_pub.publish(volt_msg)
 
       self.rate.sleep()
