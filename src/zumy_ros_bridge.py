@@ -82,11 +82,11 @@ class ZumyROS:
           self.l_enc_pub.publish(enc_msg)
 
           vel_msg = Float32()
-          vel_msg.data = sensor_packet['vl']
+          vel_msg.data = sensor_packet['vr']
           self.r_vel_pub.publish(vel_msg)
           
           vel_msg = Float32()
-          vel_msg.data = sensor_packet['vr']
+          vel_msg.data = sensor_packet['vl']
           self.l_vel_pub.publish(vel_msg)
 
           volt_msg = Float32()
