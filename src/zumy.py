@@ -29,10 +29,10 @@ enc_names = ['r_enc','l_enc']
 class Zumy:
     def __init__(self, dev='/dev/ttyACM0'):
         self.mbed=SerialRPC(dev, 115200)
-        a1=PwmOut(self.mbed, p21)
-        a2=PwmOut(self.mbed, p22)
-        b1=PwmOut(self.mbed, p23)
-        b2=PwmOut(self.mbed, p24)
+        a1=PwmOut(self.mbed, 'p21')
+        a2=PwmOut(self.mbed, 'p22')
+        b1=PwmOut(self.mbed, 'p23')
+        b2=PwmOut(self.mbed, 'p24')
 
         #Setting motor PWM frequency
         pwm_freq = 50.0
@@ -43,7 +43,7 @@ class Zumy:
         
         self.m_right = Motor(a1, a2)
         self.m_left = Motor(b1, b2)
-        self.an = AnalogIn(self.mbed, p15)
+        self.an = AnalogIn(self.mbed, 'p15')
         self.imu_vars = [RPCVariable(self.mbed,name) for name in imu_names]
         self.enc_vars = [RPCVariable(self.mbed,name) for name in enc_names]
         self.rlock=threading.Lock()

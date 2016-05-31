@@ -89,8 +89,8 @@ class mbed_interface():
 
 # for classes that need write functionality - inherits from the generic reading interface
 class mbed_interface_write(mbed_interface):
-    def __init__(self, this_mbed, mpin):
-        mbed_interface.__init__(self, this_mbed, mpin)
+#    def __init__(self, this_mbed, mpin):
+#        mbed_interface.__init__(self, this_mbed, class_name, mpin)
 
     # generic write
     def write(self, value):
@@ -161,7 +161,7 @@ class PwmOut(mbed_interface_write):
 
 class RPCFunction(mbed_interface):
     def __init__(self, this_mbed, name):
-        mbed_interface.__init__(self, this_mbed, name)
+        mbed_interface.__init__(self, this_mbed, "", name)
 
     def run(self, input):
         r = self.mbed.rpc(self.name, "run", [input])
@@ -170,11 +170,11 @@ class RPCFunction(mbed_interface):
 
 class RPCVariable(mbed_interface_write):
     def __init__(self, this_mbed, name):
-        mbed_interface_write.__init__(self, this_mbed, name)
+        mbed_interface_write.__init__(self, this_mbed, "",name)
 
     def read(self):
         r = self.mbed.rpc(self.name, "read", [])
-        return r
+        return r.split()[0]
 
 class Timer(mbed_interface):
     def __init__(self, this_mbed, name):
