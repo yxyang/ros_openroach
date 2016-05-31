@@ -10,7 +10,7 @@ from sensor_msgs.msg import Imu
 
 import socket,time
 
-class ZumyROS:	
+class ZumyROS:  
   def __init__(self):
     self.zumy = Zumy()
     rospy.init_node('zumy_ros')

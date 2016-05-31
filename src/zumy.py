@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Oct 29 06:39:30 2014
-
 @author: ajc
 """
 
@@ -50,7 +49,7 @@ class Zumy:
 
     def cmd(self, left, right):
         self.rlock.acquire()
-	      # As of Rev. F, positive command is sent to both left and right
+        # As of Rev. F, positive command is sent to both left and right
         try:
           self.m_left.cmd(left)
           self.m_right.cmd(right)
