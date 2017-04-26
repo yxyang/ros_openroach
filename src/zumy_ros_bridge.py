@@ -4,7 +4,7 @@ from zumy import *
 
 import rospy
 from geometry_msgs.msg import Twist
-from std_msgs.msg import String,Header,Int32,Float32
+from std_msgs.msg import String,Header,Int32,Float32,UInt32MultiArray
 from sensor_msgs.msg import Imu
 
 import socket
@@ -20,7 +20,8 @@ class ZumyROS:
     self.rate = rospy.Rate(100.0)
 
     rospy.Subscriber('cmd_vel', Twist, self.cmd_callback, queue_size=1)
-    
+    rospy.Subscriber('markers', UInt32MultiArray, self.marker_callback, queue_size=1)
+
     self.imu_pub = rospy.Publisher('imu', Imu, queue_size = 5)
     
     self.r_enc_pub = rospy.Publisher('r_enc', Int32, queue_size = 5)
@@ -45,6 +46,9 @@ class ZumyROS:
     l = (v - a*ROBOT_BASE/2) / ROBOT_RADIUS
     r = (v + a*ROBOT_BASE/2) / ROBOT_RADIUS
     self.zumy.cmd(l,r)
+  
+  def marker_callback(self, msg):
+    self.zumy.set_markers(msg.data)
 
   def run(self):
     while not rospy.is_shutdown():

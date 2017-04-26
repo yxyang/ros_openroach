@@ -12,6 +12,8 @@ crc8 = crcmod.mkCrcFun(0x1D5,initCrc=0,rev=False)
 header_format = 'BBcBI'
 header_fields = ['start','length','type','flags','sequence']
 
+MARKER_N_PIXEL = 6;
+
 data_formats = {
   'C': {
     'format': 'ff',
@@ -23,6 +25,7 @@ data_formats = {
   'R': {'format':'', 'fields':[]},
   'T': {'format':'I', 'fields':['time']},
   'P': {'format':'ffff', 'fields':['velr','vell','pwmr','pwml']},
+  'M': {'format':MARKER_N_PIXEL*'I', 'fields':['pixel_%d' % i for i in range(MARKER_N_PIXEL)]}, 
 }
 
 def parse_packet(packet):
@@ -126,6 +129,23 @@ def get_command_packet(left=0.0,right=0.0):
     'right': right,
     'sequence': 0
   }
+
+def get_marker_packet(colors = None):
+  if colors is None:
+    colors = []
+  if type(colors) is tuple:
+    colors = list(colors)
+  if type(colors) is not list:
+    colors = [colors]
+  colors = colors + MARKER_N_PIXEL*[0]
+  colors = colors[:MARKER_N_PIXEL]
+  pkt = {
+    'type': 'M',
+    'flags': 0,
+    'sequence': 0,
+  }
+  pkt.update(zip(data_formats['M']['fields'],colors[:MARKER_N_PIXEL]))
+  return pkt
 
 if __name__ == '__main__':
   pp = PacketParser()

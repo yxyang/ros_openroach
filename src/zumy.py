@@ -40,6 +40,10 @@ class Zumy():
     sensors = self.read_sensors()
     return [sensors[k] for k in ['vl','vr']]
 
+  def set_markers(self, colors = None):
+    packet = get_marker_packet(colors)
+    self.parser.put(packet)
+
 if __name__ == '__main__':
   z = Zumy()
   z.reset()
