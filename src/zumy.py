@@ -44,6 +44,10 @@ class Zumy():
     packet = get_marker_packet(colors)
     self.parser.put(packet)
 
+  def set_laser_galvo(self, laser_cmd = 0.0, galvo_cmd_0 = 0, galvo_cmd_1 = 0):
+    packet = get_laser_packet(laser_cmd, galvo_cmd_0, galvo_cmd_1)
+    self.parser.put(packet)
+
 if __name__ == '__main__':
   z = Zumy()
   z.reset()

@@ -25,7 +25,8 @@ data_formats = {
   'R': {'format':'', 'fields':[]},
   'T': {'format':'I', 'fields':['time']},
   'P': {'format':'ffff', 'fields':['velr','vell','pwmr','pwml']},
-  'M': {'format':MARKER_N_PIXEL*'I', 'fields':['pixel_%d' % i for i in range(MARKER_N_PIXEL)]}, 
+  'M': {'format':MARKER_N_PIXEL*'I', 'fields':['pixel_%d' % i for i in range(MARKER_N_PIXEL)]},
+  'L': {'format':'fhh', 'fields':['laser_cmd','galvo_cmd_0','galvo_cmd_1']},
 }
 
 def parse_packet(packet):
@@ -96,12 +97,12 @@ class PacketParser(threading.Thread):
       self.sequence += 1
       self.serial.write(packet)
 
-def get_time_packet(set_time = None):
+def get_time_packet(set_time = None, flags = 0):
   if set_time is None:
     set_time = time.time()
   return {
     'type': 'T',
-    'flags': 0,
+    'flags': flags,
     'time': set_time,
     'sequence': 0,
   }
@@ -145,6 +146,17 @@ def get_marker_packet(colors = None):
     'sequence': 0,
   }
   pkt.update(zip(data_formats['M']['fields'],colors[:MARKER_N_PIXEL]))
+  return pkt
+
+def get_laser_packet(laser_cmd = 0.0, galvo_cmd_0 = 0, galvo_cmd_1 = 0):
+  pkt = {
+    'type': 'L',
+    'flags': 0,
+    'sequence': 0,
+    'laser_cmd': laser_cmd,
+    'galvo_cmd_0': galvo_cmd_0,
+    'galvo_cmd_1': galvo_cmd_1,
+  }
   return pkt
 
 if __name__ == '__main__':

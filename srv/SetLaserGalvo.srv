@@ -1,0 +1,4 @@
+float32 laser_cmd
+int16   galvo_cmd_0
+int16   galvo_cmd_1
+---

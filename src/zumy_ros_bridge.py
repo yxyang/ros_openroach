@@ -6,6 +6,7 @@ import rospy
 from geometry_msgs.msg import Twist
 from std_msgs.msg import String,Header,Int32,Float32,UInt32MultiArray
 from sensor_msgs.msg import Imu
+from ros_zumy.srv import SetLaserGalvo, SetLaserGalvoResponse
 
 import socket
 
@@ -21,7 +22,7 @@ class ZumyROS:
 
     rospy.Subscriber('cmd_vel', Twist, self.cmd_callback, queue_size=1)
     rospy.Subscriber('markers', UInt32MultiArray, self.marker_callback, queue_size=1)
-
+    rospy.Service('set_laser_galvo', SetLaserGalvo, self.laser_galvo_callback)
     self.imu_pub = rospy.Publisher('imu', Imu, queue_size = 5)
     
     self.r_enc_pub = rospy.Publisher('r_enc', Int32, queue_size = 5)
@@ -49,6 +50,10 @@ class ZumyROS:
   
   def marker_callback(self, msg):
     self.zumy.set_markers(msg.data)
+
+  def laser_galvo_callback(self, req):
+    self.zumy.set_laser_galvo(req.laser_cmd, req.galvo_cmd_0, req.galvo_cmd_1)
+    return SetLaserGalvoResponse()
 
   def run(self):
     while not rospy.is_shutdown():
