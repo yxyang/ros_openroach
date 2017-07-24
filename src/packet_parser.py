@@ -19,8 +19,8 @@ data_formats = {
     'format': 'ff',
     'fields': ['left','right']},
   'S': {
-    'format': 'Iffffffiifff',
-    'fields': ['time','ax','ay','az','gx','gy','gz','el','er','vl','vr','voltage']},
+    'format': 'Iffffffiiffff',
+    'fields': ['time','ax','ay','az','gx','gy','gz','el','er','vl','vr','voltage','current']},
   'G': {'format':'i', 'fields':['period']},
   'R': {'format':'', 'fields':[]},
   'T': {'format':'I', 'fields':['time']},

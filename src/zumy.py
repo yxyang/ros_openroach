@@ -28,6 +28,9 @@ class Zumy():
   def read_voltage(self):
     return self.read_sensors()['voltage'] * 3.3 * 3.0
 
+  def read_current(self):
+    return self.read_sensors()['current'] * 3.3 * 0.6
+
   def read_enc(self):
     sensors = self.read_sensors()
     return [sensors[k] for k in ['el','er']]

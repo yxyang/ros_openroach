@@ -7,6 +7,7 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import String,Header,Int32,Float32,UInt32MultiArray
 from sensor_msgs.msg import Imu
 from ros_zumy.srv import SetLaserGalvo, SetLaserGalvoResponse
+from exploration.msg import MarkerState
 
 import socket
 
@@ -20,8 +21,9 @@ class ZumyROS:
     rospy.init_node('zumy_ros')
     self.rate = rospy.Rate(100.0)
 
-    rospy.Subscriber('cmd_vel', Twist, self.cmd_callback, queue_size=1)
+    rospy.Subscriber('command', Twist, self.cmd_callback, queue_size=1)
     rospy.Subscriber('markers', UInt32MultiArray, self.marker_callback, queue_size=1)
+    rospy.Subscriber('markers_0/command', MarkerState, self.marker_state_callback, queue_size=1)
     rospy.Service('set_laser_galvo', SetLaserGalvo, self.laser_galvo_callback)
     self.imu_pub = rospy.Publisher('imu', Imu, queue_size = 5)
     
@@ -31,6 +33,7 @@ class ZumyROS:
     self.l_vel_pub = rospy.Publisher('l_vel', Float32, queue_size = 5)
     
     self.volt_pub = rospy.Publisher('voltage', Float32, queue_size = 1)
+    self.curr_pub = rospy.Publisher('current', Float32, queue_size = 1)
     
     self.imu_count = 0
 
@@ -50,6 +53,15 @@ class ZumyROS:
   
   def marker_callback(self, msg):
     self.zumy.set_markers(msg.data)
+ 
+  # Marker state commands are BGR format (i.e. color[0] = B), and neopixel expects 0xRRGGBB
+  def marker_state_callback(self, msg):
+    markers = []
+    for i in range(0,len(msg.pixels),3):
+      markers.append(ord(msg.pixels[i]) + (ord(msg.pixels[i+1]) << 8) + (ord(msg.pixels[i+2]) << 16))
+
+    #print ['%06X' % i for i in markers]
+    self.zumy.set_markers(markers)
 
   def laser_galvo_callback(self, req):
     self.zumy.set_laser_galvo(req.laser_cmd, req.galvo_cmd_0, req.galvo_cmd_1)
@@ -101,6 +113,10 @@ class ZumyROS:
           volt_msg = Float32()
           volt_msg.data = sensor_packet['voltage'] * 3.3 * 3.0
           self.volt_pub.publish(volt_msg)
+
+          curr_msg = Float32()
+          curr_msg.data = sensor_packet['current'] * 3.3 * 0.6
+          self.curr_pub.publish(curr_msg)
 
       self.rate.sleep()
 
