@@ -44,7 +44,6 @@ class Zumy:
         self.m_left = Motor(b1, b2)
         self.an = AnalogIn(self.mbed, 'p15')
         self.imu_vars = [RPCVariable(self.mbed,name) for name in imu_names]
-        self.enc_vars = [RPCVariable(self.mbed,name) for name in enc_names]
         self.rlock=threading.Lock()
 
     def cmd(self, left, right):
@@ -56,25 +55,6 @@ class Zumy:
         except SerialException:
           pass
         self.rlock.release()
-
-    def read_voltage(self):
-        self.rlock.acquire()
-        try:
-          ain=self.an.read()*3.3*3.0
-        except SerialException:
-          pass
-        self.rlock.release()
-        volt=ain
-        return volt
-
-    def read_enc(self):
-      self.rlock.acquire()
-      try:
-        rval = [int(var.read()) for var in self.enc_vars]
-      except SerialException:
-        pass
-      self.rlock.release()
-      return rval
 
     def read_imu(self):
       self.rlock.acquire()
