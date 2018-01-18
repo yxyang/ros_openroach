@@ -43,6 +43,6 @@ roslaunch ros_openroach keyboard_teleop.launch
 
 Then use your arrow keys to control OpenRoACH!
 ## Credits
-* The RPC protocol as well as base functionality is inherited from the [ros_zumy]( by ROS'https://github.com/abuchan/ros_zumy) package from Austin Buchan.
+* The RPC protocol as well as base functionality is inherited from the [ros_zumy]('https://github.com/abuchan/ros_zumy) package from Austin Buchan.
 
 * The teleop example is inspired by ROS' [turtlesim](https://github.com/ros/ros_tutorials/tree/indigo-devel/turtlesim) package.
