@@ -3,11 +3,11 @@ This is the ros interface for OpenRoACH that allows one to communicate and contr
 ## How it works
 While there are many ways to communicate between an onboard microprocessor and host computer, one stable way we found is through the use of Remote Procedure Calls (RPC), which maintains a high baud rate and avoids losing packets.
 
-This is the ROS package that reads IMU data from OpenRoACH, publishes it to a ROS topic and subscribes to another topic for control signals. The code to implant into the MBed Microprocessor can be found at [PLACEHOLDER].
+This is the ROS package that reads IMU data from OpenRoACH, publishes it to a ROS topic and subscribes to another topic for control signals. The code to implant into the MBed Microprocessor can be found at [here](https://os.mbed.com/users/yxyang/code/ros_openroach/).
 
 ## Set Up and Troubleshooting
 
-1. In order to set up the MBed chip to deliver data, import the code in [PLACEHOLDER] to [MBed's online compiler](https://os.mbed.com/compiler/), compile the code and download the compiled `bin` file into Mbed chip
+1. In order to set up the MBed chip to deliver data, import the code in [here](https://os.mbed.com/users/yxyang/code/ros_openroach/) to [MBed's online compiler](https://os.mbed.com/compiler/), compile the code and download the compiled `bin` file into Mbed chip
 
 2. In a Linux computer running ROS (recommended version if ROS indigo, though other versions might work), import this Repo into the workspace, compile it and run the following command:
 ```
