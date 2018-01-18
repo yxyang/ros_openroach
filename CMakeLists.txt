@@ -104,6 +104,9 @@ include_directories(
 
 ## Declare a cpp executable
 # add_executable(ros_openroach_node src/ros_openroach_node.cpp)
+add_executable(teleop_keyboard src/teleop_keyboard.cpp)
+target_link_libraries(teleop_keyboard ${catkin_LIBRARIES})
+add_dependencies(teleop_keyboard ros_openroach_gencpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -127,6 +130,9 @@ include_directories(
 #   scripts/my_python_script
 #   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
+
+# install(TARGETS ros_openroach_node teleop_keyboard
+#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 ## Mark executables and/or libraries for installation
 # install(TARGETS ros_openroach ros_openroach_node

@@ -15,7 +15,7 @@ class ZumyROS:
     self.zumy = Zumy()
     rospy.init_node('zumy_ros')
     self.cmd = (0,0)
-    rospy.Subscriber('cmd_vel', Twist, self.cmd_callback,queue_size=1)
+    rospy.Subscriber('cmd_vel', Twist, self.cmd_callback, queue_size=1)
     self.lock = Condition()
     self.rate = rospy.Rate(30.0)
     self.name = socket.gethostname()
@@ -23,12 +23,14 @@ class ZumyROS:
     self.imu_count = 0
 
   def cmd_callback(self, msg):
-    lv = 0.6
-    la = 0.4
+    lv = 10
+    la = 12
     v = msg.linear.x
     a = msg.angular.z
     r = lv*v + la*a
     l = lv*v - la*a
+    l, r = max(l, 0), max(r, 0)
+    print((l, r))
     self.lock.acquire()
     self.cmd = (l,r)
     self.lock.release()
