@@ -18,7 +18,8 @@ This starts the basic interface between OpenRoACH and ROS: it publishes the gyro
 rosrun rqt_plot rqt_plot
 ```
 and add the corresponding topics. You should see something like following:
-[PLACEHOLDER]
+![](https://github.com/yxyang/ros_openroach/blob/master/imgs/demo.png)
+
 
 Two common types of errors are described as following:
 
