@@ -23,7 +23,6 @@ class Motor:
             self.a2.write(-speed)
 
 imu_names = ['accel_x','accel_y','accel_z','gyro_x','gyro_y','gyro_z']
-enc_names = ['r_enc','l_enc']
 
 class Zumy:
     def __init__(self, dev='/dev/ttyACM0'):
@@ -34,7 +33,7 @@ class Zumy:
         b2=PwmOut(self.mbed, 'p24')
 
         #Setting motor PWM frequency
-        pwm_freq = 50.0
+        pwm_freq = 500.0
         a1.period(1/pwm_freq)
         a2.period(1/pwm_freq)
         b1.period(1/pwm_freq)
@@ -44,6 +43,7 @@ class Zumy:
         self.m_left = Motor(b1, b2)
         self.an = AnalogIn(self.mbed, 'p15')
         self.imu_vars = [RPCVariable(self.mbed,name) for name in imu_names]
+        self.camera = RPCFunction(self.mbed, 'readCamera')
         self.rlock=threading.Lock()
 
     def cmd(self, left, right):
@@ -65,8 +65,13 @@ class Zumy:
       self.rlock.release()
       return rval
 
+    def read_camera(self):
+        ans = [0 for _ in range(128)]
+        for i in range(128):
+            res = self.camera.run(str(i))
+            ans[i]= int(res.split(' ')[0])
+        return ans
+
 if __name__ == '__main__':
     z=Zumy()
-    z.cmd(0.3,0.3)
-    time.sleep(0.3)
-    z.cmd(0,0) 
+ 
