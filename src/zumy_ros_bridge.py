@@ -23,18 +23,32 @@ class ZumyROS:
     self.imu_pub = rospy.Publisher('imu', Imu, queue_size = 5)
     self.camera_pub = rospy.Publisher('camera', Image, queue_size = 5)
     self.imu_count = 0
+    self.l_speed, self.r_speed = 0, 0
 
   def cmd_callback(self, msg):
-    lv = 10
-    la = 12
     v = msg.linear.x
     a = msg.angular.z
-    r = lv*v + la*a
-    l = lv*v - la*a
-    l, r = max(l, 0), max(r, 0)
-    print((l, r))
+    if (a == 0):
+      if (v > 0):
+        self.l_speed += 0.1
+        self.r_speed += 0.1
+      else:
+        self.l_speed -= 0.1
+        self.r_speed -= 0.1
+    elif (a > 0):
+      self.l_speed += 0.1
+      self.r_speed -= 0.1
+    else:
+      self.l_speed -= 0.1
+      self.r_speed += 0.1
+
+    self.l_speed = max(self.l_speed, 0)
+    self.l_speed = min(self.l_speed, 6)
+    self.r_speed = max(self.r_speed, 0)
+    self.r_speed = min(self.r_speed, 6)
+    print((self.l_speed, self.r_speed))
     self.lock.acquire()
-    self.cmd = (l,r)
+    self.cmd = (self.l_speed,self.r_speed)
     self.lock.release()
 
   def run(self):
@@ -58,7 +72,6 @@ class ZumyROS:
       image.header.stamp = rospy.Time.now()
       image.height = 1
       image.width = 128
-      #image.is_bigendian = True
       image.step = 128
       image.encoding = "mono8"
       raw_data = self.zumy.read_camera()
