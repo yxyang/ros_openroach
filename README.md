@@ -63,7 +63,15 @@ roslaunch ros_openroach keyboard_teleop.launch
 Then use your arrow keys to control OpenRoACH!
 
 ## Gait-controlled walking
+
+This code uses PID control to maintain the coordinance of leg phases. Try running
+```
+roslaunch ros_openroach phase_diff_control.launch
+```
+and use W/A/S/D to see what happens!
 ## Closing the loop with OptiTrack
+
+One good part about ROS is its easy integrability with other existing packages. For example, the [mocap_optitrack](https://github.com/jlamyi/mocap_optitrack) package could be integrated for closed-loop control of OpenRoACH. See `velocity_diffdrive.py` for details.
 # Credits
 * The RPC protocol as well as base functionality is inherited from the [ros_zumy](https://github.com/abuchan/ros_zumy) package from Austin Buchan.
 
