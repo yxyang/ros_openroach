@@ -1,0 +1,4 @@
+<launch>
+  <node name="zumy_ros_bridge" pkg="ros_openroach" type="zumy_ros_bridge.py"/>
+  <node name="velocity_diffdrive" pkg="ros_openroach" type="velocity_diffdrive.py"/>
+</launch>

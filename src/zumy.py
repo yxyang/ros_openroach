@@ -8,50 +8,33 @@ from mbedrpc import *
 import threading
 import time
 from serial import SerialException
-
-class Motor:
-    def __init__(self, a1, a2):
-        self.a1=a1
-        self.a2=a2
-
-    def cmd(self, speed):
-        if speed >=0:
-            self.a1.write(speed)
-            self.a2.write(0)
-        else:
-            self.a1.write(0)
-            self.a2.write(-speed)
+import pigpio
 
 imu_names = ['accel_x','accel_y','accel_z','gyro_x','gyro_y','gyro_z']
+l_enc_pin = 23 # Use Raspberry PI pin 23 for left encoder interrupts
+r_enc_pin = 24 # Use Raspberry PI pin 24 for right encoder interrupts
 
 class Zumy:
     def __init__(self, dev='/dev/ttyACM0'):
         self.mbed=SerialRPC(dev, 115200)
-        a1=PwmOut(self.mbed, 'p21')
-        a2=PwmOut(self.mbed, 'p22')
-        b1=PwmOut(self.mbed, 'p23')
-        b2=PwmOut(self.mbed, 'p24')
-
-        #Setting motor PWM frequency
-        pwm_freq = 500.0
-        a1.period(1/pwm_freq)
-        a2.period(1/pwm_freq)
-        b1.period(1/pwm_freq)
-        b2.period(1/pwm_freq)
-        
-        self.m_right = Motor(a1, a2)
-        self.m_left = Motor(b1, b2)
+        self.m_left = RPCVariable(self.mbed, 'duty_cycle_left')
+        self.m_right = RPCVariable(self.mbed, 'duty_cycle_right')
         self.an = AnalogIn(self.mbed, 'p15')
         self.imu_vars = [RPCVariable(self.mbed,name) for name in imu_names]
         self.camera = RPCFunction(self.mbed, 'readCamera')
         self.rlock=threading.Lock()
 
+        self.pi = pigpio.pi()
+        self.l_enc = self.pi.callback(11)
+        self.r_enc = self.pi.callback(8)
+
     def cmd(self, left, right):
         self.rlock.acquire()
         # As of Rev. F, positive command is sent to both left and right
         try:
-          self.m_left.cmd(left)
-          self.m_right.cmd(right)
+            self.m_left.write(left)
+            self.m_right.write(right)
+            pass
         except SerialException:
           pass
         self.rlock.release()
@@ -59,9 +42,15 @@ class Zumy:
     def read_imu(self):
       self.rlock.acquire()
       try:
-        rval = [float(var.read()) for var in self.imu_vars]
+	rval = [float(var.read()) for var in self.imu_vars]
       except SerialException:
         pass
+      self.rlock.release()
+      return rval
+    
+    def read_enc(self):
+      self.rlock.acquire()
+      rval = [self.l_enc.tally(), self.r_enc.tally()]
       self.rlock.release()
       return rval
 

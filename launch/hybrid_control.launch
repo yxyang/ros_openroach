@@ -1,0 +1,4 @@
+<launch>
+  <node name="zumy_ros_bridge" pkg="ros_openroach" type="zumy_ros_bridge.py"/>
+  <node name="hybrid_control" pkg="ros_openroach" type="hybrid_control.py"/>
+</launch>

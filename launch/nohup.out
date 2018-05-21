@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/home/biomimetics/ros_workspace/src/ros_openroach/src/zumy_ros_bridge.py", line 88, in <module>
+    zr = ZumyROS()
+  File "/home/biomimetics/ros_workspace/src/ros_openroach/src/zumy_ros_bridge.py", line 16, in __init__
+    self.zumy = Zumy()
+  File "/home/biomimetics/ros_workspace/src/ros_openroach/src/zumy.py", line 29, in __init__
+    self.mbed=SerialRPC(dev, 115200)
+  File "/home/biomimetics/ros_workspace/src/ros_openroach/src/mbedrpc.py", line 44, in __init__
+    self.ser = serial.Serial(port)
+  File "/home/biomimetics/.local/lib/python2.7/site-packages/serial/serialutil.py", line 240, in __init__
+    self.open()
+  File "/home/biomimetics/.local/lib/python2.7/site-packages/serial/serialposix.py", line 268, in open
+    raise SerialException(msg.errno, "could not open port {}: {}".format(self._port, msg))
+serial.serialutil.SerialException: [Errno 13] could not open port /dev/ttyACM0: [Errno 13] Permission denied: '/dev/ttyACM0'

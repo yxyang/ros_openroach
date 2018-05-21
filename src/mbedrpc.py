@@ -42,7 +42,7 @@ class mbed:
 class SerialRPC(mbed):
     def __init__(self, port, baud):
         self.ser = serial.Serial(port)
-        self.ser.setBaudrate(baud)
+	self.ser.baudrate = baud
 
     def rpc(self, name, method, args):
         # creates the command to be sent serially - /name/method arg1 arg2 arg3 ... argN

@@ -1,0 +1,3 @@
+<launch>
+  <node name="zumy_ros_bridge" pkg="ros_openroach" type="zumy_ros_bridge.py"/>
+</launch>

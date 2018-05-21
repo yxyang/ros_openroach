@@ -1,0 +1,4 @@
+<launch>
+  <node name="zumy_ros_bridge" pkg="ros_openroach" type="zumy_ros_bridge.py"/>
+  <node name="phase_diff_control_cl" pkg="ros_openroach" type="phase_diff_control_cl.py"/>
+</launch>

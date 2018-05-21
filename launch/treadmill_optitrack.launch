@@ -1,0 +1,4 @@
+<launch>
+  <node name="zumy_ros_bridge" pkg="ros_openroach" type="zumy_ros_bridge.py"/>
+  <node name="treadmill_optitrack" pkg="ros_openroach" type="treadmill_optitrack.py"/>
+</launch>
